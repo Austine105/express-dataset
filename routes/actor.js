@@ -1,6 +1,140 @@
 var express = require('express');
 var router = express.Router();
 
-// Routes related to actor.
+const { QueryTypes } = require('sequelize');
 
+const Actor = require("../models").Actor;
+const Event = require("../models").Event;
+
+const sequelize = require('../models').sequelize;
+
+// / Routes related to actor.
+// console.log('Actor: ' + JSON.stringify(Event));
 module.exports = router;
+
+// "id":2790311,
+// "login":"daniel33",
+// "avatar_url"
+
+// models.modelA.findAll({
+//   attributes: [
+//      'id'
+//   ],
+//   raw: true,
+
+
+// }).then(function (tenants) {
+
+// });
+
+
+// ANS
+// SELECT created_at, COUNT(`Event`.`id`) AS `total_events`, `Actor`.`id` AS `Actor.id`, `Actor`.`login` AS `Actor.login`, `Actor`.`avatar_url` AS `Actor.avatar_url` FROM `Events` AS `Event` LEFT OUTER JOIN `Actors` AS `Actor` ON `Event`.`ActorId` = `Actor`.`id` 
+// GROUP BY Actor.id ORDER BY total_events DESC, Event.created_at DESC, login ;
+
+
+
+
+router.get("/", (req, res) => {
+
+  // let query = "SELECT created_at, COUNT(`Event`.`id`) AS `total_events`, `Actor`.`id` AS `Actor.id`, `Actor`.`login` AS `Actor.login`, `Actor`.`avatar_url` AS `Actor.avatar_url` FROM `Events` AS `Event` LEFT OUTER JOIN `Actors` AS `Actor` ON `Event`.`ActorId` = `Actor`.`id` GROUP BY Actor.id ORDER BY total_events DESC, Event.created_at DESC, login"
+
+  (async function () {
+    // Function body
+    try {
+      const users = await sequelize.query("SELECT created_at, COUNT(`Event`.`id`) AS `total_events`, `Actor`.`id` AS `Actor.id`, `Actor`.`login` AS `Actor.login`, `Actor`.`avatar_url` AS `Actor.avatar_url` FROM `Events` AS `Event` LEFT OUTER JOIN `Actors` AS `Actor` ON `Event`.`ActorId` = `Actor`.`id` GROUP BY Actor.id ORDER BY total_events DESC, Event.created_at DESC, login", { type: QueryTypes.SELECT })
+      if (users) res.json(users)
+      // console.log('yes');
+    }
+    catch(err){
+      res.json(err)
+      // console.log('nooo');
+    }
+
+  //   
+  })();
+  
+
+  // SaleItem.findAll({
+  //   attributes: ['itemId', [sequelize.fn('count', sequelize.col('itemId')), 'count']],
+  //   group : ['SaleItem.itemId'],
+  //   raw: true,
+  //   order: sequelize.literal('count DESC')
+  // });
+
+  // Event.findAll({
+  //   attributes: [ 
+  //     // 'id',  
+  //     [sequelize.fn('COUNT', sequelize.col('Event.id')), 'no_events'] ],
+  //     group: ['id'],
+  //   include:
+  //   [
+  //     {
+  //       model: Actor,
+  //       attributes: [
+  //         'id', 'login', 'avatar_url', // Add column names here inside attributes array.
+  //         // [sequelize.fn('COUNT', sequelize.col('id')), 'no_events'],
+  //       ]
+  //     }
+  //   ],
+  //   // group: ['no_events'],
+  // })
+  // .then(actors => {
+  //   res.json(actors);
+  // })
+  // .catch(err => res.json(err));
+
+});
+
+router.get("/:id", (req, res) => {
+  Actor.findAll({
+    where: { id: req.params.id }
+  })
+    .then(actor => {
+      res.json(actor[0]);
+    })
+    .catch(err => res.json(err));
+});
+
+// router.post("/", (req, res) => {
+//   Actor.create({
+//     name: req.body.name,
+//     id: req.body.id,
+//   })
+//     .then(res => {
+//       res.json(res);
+//     })
+//     .catch(err => res.json(err));
+// });
+
+
+// /actors. The actor JSON is sent in the request body. If the actor with the id does not exist then the response code should be 404, 
+// or if there are other fields being updated for the actor then the HTTP response code should be 400, otherwise, the response code should be 200.
+router.put("/", (req, res) => {
+  let {id, login, avatar_url } = req.body;
+  let fieldChanged = false
+
+  Actor.findByPk(req.body.id)
+  .then(actor => {
+    if(!actor) return res.json().status(404)
+    if (login && login !== actor.login) fieldChanged = true
+    // else
+    Actor.update({ login, avatar_url }, { where: { id } })
+    .then(actor => {
+      console.log('actor updated');
+      // if (login) return res.json(actor).status(400);
+      res.json(actor).status((fieldChanged) ? 400: 200);
+    })
+  })
+  .catch(err => res.json(err));
+});
+
+// router.delete("/:id", (req, res) => {
+//   Actor.destroy({
+//     where: { id: req.params.id }
+//   })
+//     .then(actor => {
+//       res.json(actor);
+//     })
+//     .catch(err => res.json(err));
+// });
