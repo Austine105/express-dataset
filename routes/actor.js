@@ -34,6 +34,12 @@ module.exports = router;
 
 
 
+// Returning the actor records ordered by the total number of events: 
+// The service should be able to return the JSON array of all the actors sorted by the total number of associated events with each actor in descending order by the GET request at /actors. 
+// If there are more than one actors with the same number of events, then order them by the timestamp of the latest event in the descending order. 
+// If more than one actors have the same timestamp for the latest event, then order them by the alphabetical order of login. 
+// The HTTP response code should be 200.
+
 
 router.get("/", (req, res) => {
 
@@ -116,25 +122,15 @@ router.put("/", (req, res) => {
 
   Actor.findByPk(req.body.id)
   .then(actor => {
-    if(!actor) return res.json().status(404)
-    if (login && login !== actor.login) fieldChanged = true
+    if(!actor) return res.json().sendStatus(404)
+    if (login && login === actor.login) fieldChanged = true
+
     // else
     Actor.update({ login, avatar_url }, { where: { id } })
     .then(actor => {
-      console.log('actor updated');
       // if (login) return res.json(actor).status(400);
-      res.json(actor).status((fieldChanged) ? 400: 200);
+      res.sendStatus((fieldChanged) ? 400: 200);
     })
   })
   .catch(err => res.json(err));
 });
-
-// router.delete("/:id", (req, res) => {
-//   Actor.destroy({
-//     where: { id: req.params.id }
-//   })
-//     .then(actor => {
-//       res.json(actor);
-//     })
-//     .catch(err => res.json(err));
-// });

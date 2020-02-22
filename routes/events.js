@@ -25,8 +25,8 @@ router.get("/actors/:actorId", (req, res) => {
     order: [['id', 'ASC']]
   })
     .then(events => {
-      if (events) res.json(events).status(200);
-      else res.status(404)
+      if (events && events.length > 0) res.json(events).status(200);
+      else res.sendStatus(404)
     })
     .catch(err => res.json(err));
 });
@@ -51,7 +51,7 @@ router.post("/", (req, res, next) => {
     if (event) {
       // console.log('event oo: ' + JSON.stringify(event));
       console.log('event exists!!');
-      return res.json().status(400)
+      return res.sendStatus(400)
     }
     // res.json(event[0]);
     //  else return Actor.create(req.body.actor) // PLEASE USE CREATE IF HERE!!!
@@ -84,7 +84,7 @@ router.post("/", (req, res, next) => {
               // if( created) return res.json().sendStatus(201);
               // return res.json({created}).status((created)? 400: 201);
               console.log('event created')
-              return res.json().status(201)
+              return res.sendStatus(201)
               
             })
           })
