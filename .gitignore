@@ -4,6 +4,7 @@
 # user docs
 *.txt
 
+
 # Maven
 
 target/

@@ -4,7 +4,11 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
-const sqlite3 = require('sqlite3').verbose();
+// const sqlite3 = require('sqlite3').verbose();
+const sqlite3 = require('sqlite3');
+// const moment = require('moment');
+
+// console.log('moment().format(): ' + moment().format('YYYY-MM-DD hh:mm:ss'));
 
 var index = require('./routes/index');
 var eraseEvents = require('./routes/eraseEvents');
@@ -26,6 +30,7 @@ app.use(bodyParser.json());
 // app.use(cookieParser());
 // app.use(express.static(path.join(__dirname, 'public')));
 
+// moment().format("2014-12-08 23:13:31", 'YYYY-MM-DD hh:mm:ss')
 
 app.use('/', index);
 app.use('/erase', eraseEvents);
@@ -41,7 +46,7 @@ app.use(function(req, res, next) {
 });
 
 // error handler
-app.use(require('./_helpers/error-handler'));
+// app.use(require('./_helpers/error-handler'));
 
 // // error handler
 // app.use(function(err, req, res, next) {
