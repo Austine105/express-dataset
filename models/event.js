@@ -18,12 +18,9 @@ module.exports = (sequelize, DataTypes) => {
     repo_url: DataTypes.STRING,
     created_at: {
       type: DataTypes.DATE,
-
+      // uses moment to format the date output
       get: function()  {
-        // return time;
-        // return moment().format(time, 'YYYY-MM-DD hh:mm:ss');
         return moment(this.getDataValue('created_at')).format("YYYY-MM-DD HH:mm:ss");
-        // return this.getDataValue('created_at').toJSON();
       },
     }
   }, {
